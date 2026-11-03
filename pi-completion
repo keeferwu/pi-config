@@ -1,0 +1,51 @@
+# bash completion for pi (https://github.com/earendil-works/pi)
+# Subcommands + global options; falls back to file completion otherwise.
+
+_pi() {
+    local cur prev
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    COMPREPLY=()
+
+    local commands="install remove uninstall update list config auth mcp"
+
+    # Long options (plus shorts), from `pi --help`; add extension flags here too.
+    local options="--provider --model --api-key --system-prompt --append-system-prompt \
+--mode --print -p --continue -c --resume -r --session --session-id --fork \
+--session-dir --no-session --name -n --models --no-tools -nt --no-builtin-tools -nbt \
+--tools -t --exclude-tools -xt --thinking --extension -e --no-extensions -ne \
+--no-mcp --skill --no-skills -ns --prompt-template --no-prompt-templates -np \
+--theme --no-themes --use-theme --no-context-files -nc --export --list-models \
+--verbose --tui-mode --approve -a --no-approve -na --offline --help -h --version -v \
+--no-tool --plan"
+
+    # Options that consume the next token as a value.
+    local valued="--provider --model --api-key --system-prompt --append-system-prompt \
+--mode --session --session-id --fork --session-dir --name -n --models --tools -t \
+--exclude-tools -xt --thinking --extension -e --skill --prompt-template --theme \
+--use-theme --export --tui-mode --no-tool --url --env --cwd --header"
+
+    [[ " $valued " == *" $prev "* ]] && return 0  # option consumes next token
+
+    if [[ "$cur" == -* ]]; then
+        [[ "$cur" == *=* ]] && return 0  # value after '=': nothing to offer
+        COMPREPLY=($(compgen -W "$options" -- "$cur"))
+        [[ ${#COMPREPLY[@]} -eq 1 ]] && COMPREPLY[0]+="="
+        return 0
+    fi
+
+    case "${COMP_WORDS[1]}" in
+        auth) COMPREPLY=($(compgen -W "print-api-key print-bearer-token check" -- "$cur")); return 0 ;;
+        # mcp first arg: subcommand; after that, file/positional is fine
+        mcp)  [[ $COMP_CWORD -eq 2 ]] && COMPREPLY=($(compgen -W "add remove list login logout" -- "$cur")) ; return 0 ;;
+    esac
+
+    if [[ $COMP_CWORD -eq 1 ]]; then
+        COMPREPLY=($(compgen -W "$commands" -- "$cur"))
+    else
+        COMPREPLY=($(compgen -f -- "$cur"))
+    fi
+    return 0
+}
+
+complete -F _pi pi

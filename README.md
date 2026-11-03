@@ -1,7 +1,16 @@
 
 ## 配置安装方法
 
+```
    git clone https://gitee.com/keeferwu/pi-config ~/.pi/agent
+```
+
+## pi 命令补全
+
+```
+   sudo cp pi-completion /usr/share/bash-completion/completions/pi
+   sudo chown root:root /usr/share/bash-completion/completions/pi
+```
 
 ## 安装/卸载/更新扩展
 
