@@ -1,0 +1,59 @@
+{
+  "$schema": "https://raw.githubusercontent.com/gotgenes/pi-packages/main/packages/pi-permission-system/schemas/permissions.schema.json",
+  "debugLog": false,
+  "permissionReviewLog": true,
+  "yoloMode": false,
+  "doublePressToConfirm": false,
+  "commandEffects": {
+    "rtk": {
+      "subcommands": {
+        "ls": "read",
+        "find": "read",
+        "grep": "read",
+        "rg": "read",
+        "read": "read",
+        "tree": "read",
+        "diff": "read",
+        "env": "read",
+        "deps": "read",
+        "json": "read",
+        "git": {
+          "subcommands": {
+            "status": "read",
+            "diff": "read",
+            "log": "read",
+            "branch": "read",
+            "rev-parse": "read",
+            "show": "read",
+            "remote": "read"
+          }
+        }
+      }
+    }
+  },
+  "permission": {
+    "*": "allow",
+    "path": {
+      "*": "allow",
+      "~/.ssh/**": "deny",
+      "*.pem": "deny",
+      "*.env": "deny",
+      ".env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow"
+    },
+    "external_directory_write": "ask",
+    "bash": {
+      "*": "allow",
+      "rm *": "ask",
+      "dd *": "ask",
+      "mkfs*": "ask",
+      "shutdown*": "ask",
+      "reboot*": "ask",
+      "git push --force*": "ask",
+      "git push -f*": "ask",
+      "git reset --hard *": "ask",
+      "git clean *": "ask"
+    }
+  }
+}
