@@ -3,6 +3,7 @@
 
 ```
    git clone https://gitee.com/keeferwu/pi-config ~/.pi/agent
+   cd ~/.pi/agent && ./install.sh
 ```
 
 ## pi 命令补全
