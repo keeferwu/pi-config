@@ -2,10 +2,10 @@ npm:pi-open-tui
 npm:pi-web-search
 npm:pi-lens
 npm:pi-cache-optimizer
-npm:context-mode
+#npm:context-mode
 npm:@dietrichgebert/ponytail
 npm:@narumitw/pi-plan-mode
-npm:@juicesharp/rpiv-todo
+#npm:@juicesharp/rpiv-todo
 npm:@juicesharp/rpiv-ask-user-question
 npm:@gotgenes/pi-permission-system
 npm:@gotgenes/pi-subagents
