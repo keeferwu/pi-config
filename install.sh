@@ -63,3 +63,32 @@ if [ "${#failed[@]}" -gt 0 ]; then
   exit 1
 fi
 log "完成：$((${#pkgs[@]} - ${#failed[@]}))/${#pkgs[@]} 个包"
+
+# 4 rtk 是 extensions/rtk.ts 的硬依赖：缺失或过旧（需 >= 0.23.0 的 rtk rewrite）时
+#     该扩展只是静默禁用，所以这里必须显式报出来
+if ! command -v rtk >/dev/null 2>&1; then
+  printf '警告：PATH 中没有 rtk，extensions/rtk.ts 将被禁用（命令不再自动改写为 rtk）\n' >&2
+else
+  rtk_rc=0; rtk rewrite ls >/dev/null 2>&1 || rtk_rc=$?
+  case $rtk_rc in
+    0 | 1 | 3) log "$(rtk --version 2>/dev/null | head -1) 可用" ;;
+    *) printf '警告：rtk 不支持 rewrite 子命令（需 >= 0.23.0），extensions/rtk.ts 将被禁用\n' >&2 ;;
+  esac
+fi
+
+# 5. 扩展行为所需的环境变量写入 ~/.bashrc（按变量幂等，已存在则不覆盖）
+# shortcut: 只写 ~/.bashrc（bash 专用）；换 zsh/fish 需手动补
+BASHRC="$HOME/.bashrc"
+ensure_export() {
+  local key="$1" value="$2" note="$3"
+  if grep -qE "^[[:space:]]*export[[:space:]]+${key}=" "$BASHRC" 2>/dev/null; then
+    log "$key 已在 $BASHRC，跳过"
+    return 0
+  fi
+  printf '\n# %s\nexport %s=%s\n' "$note" "$key" "$value" >> "$BASHRC"
+  log "已写入 $key=$value -> $BASHRC"
+}
+
+# pi-cache-optimizer 会把 <available_skills> XML 压成 markdown，导致 pi-permission-system
+# 的 skill 权限判定（含 skill 目录内文件读取）静默失效；关掉 skill 压缩即可恢复。
+ensure_export PI_CACHE_OPTIMIZER_NO_SKILL_COMPRESSION 1 "pi-cache-optimizer: keep native <available_skills> XML for pi-permission-system"

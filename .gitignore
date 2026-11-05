@@ -8,5 +8,7 @@ trust.json
 
 npm/
 sessions/
+pi-web-access/
+web-search-cache/
 pi-cache-optimizer-stats.d/
 extensions/pi-permission-system/logs/
