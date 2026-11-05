@@ -2,11 +2,14 @@
   "mcpServers": {
     "context7": {
       "url": "https://mcp.context7.com/mcp",
-      "exposure": "direct"
+      "headers": {
+        "Authorization": "Bearer ${CONTEXT7_API_KEY}"
+      },
+      "exposure": "deferred"
     },
     "grep-app": {
       "url": "https://mcp.grep.app",
-      "exposure": "direct"
+      "exposure": "deferred"
     }
   }
 }
