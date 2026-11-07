@@ -7,7 +7,7 @@
       },
       "exposure": "deferred"
     },
-    "grep-app": {
+    "gh_grep": {
       "url": "https://mcp.grep.app",
       "exposure": "deferred"
     }
