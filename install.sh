@@ -64,17 +64,14 @@ if [ "${#failed[@]}" -gt 0 ]; then
 fi
 log "完成：$((${#pkgs[@]} - ${#failed[@]}))/${#pkgs[@]} 个包"
 
-# 4 rtk 是 extensions/rtk.ts 的硬依赖：缺失或过旧（需 >= 0.23.0 的 rtk rewrite）时
-#     该扩展只是静默禁用，所以这里必须显式报出来
+# 4  安装extensions/rtk.ts
 if ! command -v rtk >/dev/null 2>&1; then
-  printf '警告：PATH 中没有 rtk，extensions/rtk.ts 将被禁用（命令不再自动改写为 rtk）\n' >&2
-else
-  rtk_rc=0; rtk rewrite ls >/dev/null 2>&1 || rtk_rc=$?
-  case $rtk_rc in
-    0 | 1 | 3) log "$(rtk --version 2>/dev/null | head -1) 可用" ;;
-    *) printf '警告：rtk 不支持 rewrite 子命令（需 >= 0.23.0），extensions/rtk.ts 将被禁用\n' >&2 ;;
-  esac
+    curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
+    sudo cp $HOME/.local/bin/rtk /usr/local/bin/
+    sudo chown root:root /usr/local/bin/rtk
+    sudo chmod 777 /usr/local/bin/rtk
 fi
+rtk init -g --agent pi
 
 # 5. 扩展行为所需的环境变量写入 ~/.bashrc（按变量幂等，已存在则不覆盖）
 # shortcut: 只写 ~/.bashrc（bash 专用）；换 zsh/fish 需手动补

@@ -11,4 +11,5 @@ sessions/
 pi-web-access/
 web-search-cache/
 pi-cache-optimizer-stats.d/
+extensions/rtk.ts
 extensions/pi-permission-system/logs/
