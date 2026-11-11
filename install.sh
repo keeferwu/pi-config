@@ -154,9 +154,11 @@ omp_config_add() {
 
 if [ "$CLI" = omp ]; then
   mkdir -p "$HOME/.omp/agent"
-  omp_config_add disabledExtensions extension-module:rtk
-  omp_config_add extensions "$HOME/.omp/agent/extensions/rtk.ts"
   cp mcp-omp.json "$HOME/.omp/agent/mcp.json"
+  if [ -e "$HOME/.omp/agent/extensions/rtk.ts" ]; then
+    omp_config_add disabledExtensions extension-module:rtk
+    omp_config_add extensions "$HOME/.omp/agent/extensions/rtk.ts"
+  fi
   # codebase-memory-mcp 缺失不是致命错误，否则 set -e 会中断后续步骤
   if command -v codebase-memory-mcp >/dev/null 2>&1; then
     codebase-memory-mcp install --clients=omp -y || log "codebase-memory-mcp 配置失败，跳过"
