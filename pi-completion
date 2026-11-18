@@ -4,7 +4,7 @@
 _pi() {
     local cur prev
     cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]%%=*}"   # --flag=value: treat the flag, not the pair
     COMPREPLY=()
 
     local commands="install remove uninstall update list config auth mcp"
@@ -17,13 +17,25 @@ _pi() {
 --no-mcp --skill --no-skills -ns --prompt-template --no-prompt-templates -np \
 --theme --no-themes --use-theme --no-context-files -nc --export --list-models \
 --verbose --tui-mode --approve -a --no-approve -na --offline --help -h --version -v \
---no-tool --plan"
+--plan"
 
     # Options that consume the next token as a value.
     local valued="--provider --model --api-key --system-prompt --append-system-prompt \
 --mode --session --session-id --fork --session-dir --name -n --models --tools -t \
 --exclude-tools -xt --thinking --extension -e --skill --prompt-template --theme \
---use-theme --export --tui-mode --no-tool --url --env --cwd --header"
+--use-theme --export --tui-mode --url --env --cwd --header"
+
+    # Fixed value sets, so these don't just swallow the next token.
+    case "$prev" in
+        --mode)
+            COMPREPLY=($(compgen -W "text json rpc" -- "$cur")); return 0 ;;
+        --thinking)
+            COMPREPLY=($(compgen -W "off minimal low medium high xhigh max" -- "$cur")); return 0 ;;
+        --tui-mode)
+            COMPREPLY=($(compgen -W "fullscreen regular" -- "$cur")); return 0 ;;
+        --theme|--export|--session-dir)
+            COMPREPLY=($(compgen -f -- "$cur")); compopt -o filenames 2>/dev/null; return 0 ;;
+    esac
 
     [[ " $valued " == *" $prev "* ]] && return 0  # option consumes next token
 
@@ -35,7 +47,7 @@ _pi() {
     fi
 
     case "${COMP_WORDS[1]}" in
-        auth) COMPREPLY=($(compgen -W "print-api-key print-bearer-token check" -- "$cur")); return 0 ;;
+        auth) [[ $COMP_CWORD -eq 2 ]] && COMPREPLY=($(compgen -W "login logout print-api-key print-bearer-token check" -- "$cur")); return 0 ;;
         # mcp first arg: subcommand; after that, file/positional is fine
         mcp)  [[ $COMP_CWORD -eq 2 ]] && COMPREPLY=($(compgen -W "add remove list login logout" -- "$cur")) ; return 0 ;;
     esac
