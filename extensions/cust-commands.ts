@@ -1,9 +1,13 @@
 /**
- * Add /delete to remove the current session file.
+ * Custom commands.
  *
- * Pi refuses to delete the active session from /resume, so switch to a fresh
- * session first, then unlink the old file: while the old session is active the
- * process still writes to it.
+ * /delete — remove the current session file. Pi refuses to delete the active
+ * session from /resume, so switch to a fresh session first, then unlink the old
+ * file: while the old session is active the process still writes to it.
+ *
+ * /exit — alias of the built-in /quit. Both go through Pi's graceful shutdown
+ * path (same as Ctrl+D): immediate when idle, deferred until the current run
+ * settles otherwise.
  */
 import { stat, unlink } from "node:fs/promises";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -30,6 +34,13 @@ export default function (pi: ExtensionAPI) {
 					fresh.ui.notify(`Deleted session ${file}`, "info");
 				},
 			});
+		},
+	});
+
+	pi.registerCommand("exit", {
+		description: "Quit pi",
+		handler: (_args, ctx) => {
+			ctx.shutdown();
 		},
 	});
 }
