@@ -130,6 +130,11 @@ if [ "${#failed[@]}" -gt 0 ]; then
 fi
 log "完成：$((${#pkgs[@]} - ${#failed[@]}))/${#pkgs[@]} 个包"
 
+# install some skills to ~/.agents/skills
+npx skills add vercel-labs/skills -g -y --skill find-skills --agent pi
+npx skills add mattpocock/skills -g -y --skill grilling --skill diagnosing-bugs --skill  writing-for-agents --agent pi
+npx skills add keeferwu/agent-skills -g -y --skill send-email --agent pi
+
 # 4  安装extensions/rtk.ts
 if ! command -v rtk >/dev/null 2>&1; then
     curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh
