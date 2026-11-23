@@ -6,6 +6,6 @@ npm:pi-cache-optimizer
 npm:@dietrichgebert/ponytail
 #npm:@juicesharp/rpiv-todo
 npm:@juicesharp/rpiv-ask-user-question
-npm:@plannotator/pi-extension
+#npm:@plannotator/pi-extension
 #npm:@gotgenes/pi-permission-system
 #npm:@gotgenes/pi-subagents
