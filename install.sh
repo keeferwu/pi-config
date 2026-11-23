@@ -73,6 +73,18 @@ if [ "$CLI" = omp ]; then "$CLI" completions bash > "$comp_tmp"; else cp pi-comp
 $SUDO install -D -m 644 "$comp_tmp" "/usr/share/bash-completion/completions/$CLI" || log "补全安装失败，跳过"
 rm -f "$comp_tmp"
 
+# 2.5 plannotator CLI：pi 扩展的配套二进制，缺失时只装二进制（--minimal 不写 skills/hooks）
+if ! command -v plannotator >/dev/null 2>&1; then
+  log "plannotator 不存在，安装二进制"
+  curl -fsSL https://plannotator.ai/install.sh | bash -s -- --minimal \
+    || log "plannotator 安装失败，跳过（需要时手动重试）"
+fi
+# --minimal 不装 agent-terminal 运行时，单独补（annotate 模式的内置终端，需要 node/npm）
+if command -v plannotator >/dev/null 2>&1; then
+  plannotator install-runtime agent-terminal \
+    || log "agent-terminal 运行时安装失败，annotate 模式将没有内置终端"
+fi
+
 # 3. 依次安装扩展（pi 读 packages.txt，omp 读 packages-omp.txt，安装命令也不同）
 [ -f "$PKGS_FILE" ] || die "$PKGS_FILE 不存在（$CLI 模式需要它）"
 mapfile -t pkgs < <(grep -v -e '^[[:space:]]*#' -e '^[[:space:]]*$' "$PKGS_FILE" || true)
