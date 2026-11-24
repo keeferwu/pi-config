@@ -178,6 +178,10 @@ omp_config_add() {
 if [ "$CLI" = omp ]; then
   mkdir -p "$HOME/.omp/agent"
   cp mcp-omp.json "$HOME/.omp/agent/mcp.json"
+  # omp_config_add 每次插在 key 下一行，故逆序写入以得到期望顺序
+  for p in github windsurf cursor gemini codex claude opencode; do
+    omp_config_add disabledProviders "$p"
+  done
   if [ -e "$HOME/.omp/agent/extensions/rtk.ts" ]; then
     omp_config_add disabledExtensions extension-module:rtk
     omp_config_add extensions "$HOME/.omp/agent/extensions/rtk.ts"
